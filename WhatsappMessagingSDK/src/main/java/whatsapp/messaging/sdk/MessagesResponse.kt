@@ -1,4 +1,4 @@
-package `in`.myinnos.wpaysdk.model
+package whatsapp.messaging.sdk
 
 class WResults {
 

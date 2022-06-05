@@ -1,4 +1,4 @@
-package `in`.myinnos.wpaysdk.retro
+package whatsapp.messaging.sdk
 
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
