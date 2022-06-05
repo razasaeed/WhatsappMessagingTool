@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:hint="Send Message"
+            android:text="Send Message"
             android:padding="16dp"
             android:textColor="@color/white"
             android:textSize="16sp"
