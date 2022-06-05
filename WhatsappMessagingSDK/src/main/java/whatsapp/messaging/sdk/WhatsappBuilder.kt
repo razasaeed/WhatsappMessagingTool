@@ -28,60 +28,68 @@ class WhatsappBuilder {
             callback: (wResult: WResults?) -> Unit
         ) {
 
-            if (bearerToken.isNullOrEmpty()) {
-                Toast.makeText(context, "Bearer token is required", Toast.LENGTH_SHORT).show()
-            } else if (version.isNullOrEmpty()) {
-                Toast.makeText(context, "Version is required", Toast.LENGTH_SHORT).show()
-            } else if (phoneNumberID.isNullOrEmpty()) {
-                Toast.makeText(context, "Phone Number ID is required", Toast.LENGTH_SHORT).show()
-            } else if (toPhoneNumber.isNullOrEmpty()) {
-                Toast.makeText(context, "Phone Number is required", Toast.LENGTH_SHORT).show()
-            } else if (message.isNullOrEmpty()) {
-                Toast.makeText(context, "Message is required", Toast.LENGTH_SHORT).show()
-            } else if (languageCode.isNullOrEmpty()) {
-                Toast.makeText(context, "Language Code is required", Toast.LENGTH_SHORT).show()
-            } else {
-                val wPayAPI = RetrofitHelper.getInstance().create(WAPI::class.java)
+            when {
+                bearerToken.isNullOrEmpty() -> {
+                    Toast.makeText(context, "Bearer token is required", Toast.LENGTH_SHORT).show()
+                }
+                version.isNullOrEmpty() -> {
+                    Toast.makeText(context, "Version is required", Toast.LENGTH_SHORT).show()
+                }
+                phoneNumberID.isNullOrEmpty() -> {
+                    Toast.makeText(context, "Phone Number ID is required", Toast.LENGTH_SHORT).show()
+                }
+                toPhoneNumber.isNullOrEmpty() -> {
+                    Toast.makeText(context, "Phone Number is required", Toast.LENGTH_SHORT).show()
+                }
+                message.isNullOrEmpty() -> {
+                    Toast.makeText(context, "Message is required", Toast.LENGTH_SHORT).show()
+                }
+                languageCode.isNullOrEmpty() -> {
+                    Toast.makeText(context, "Language Code is required", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    val wPayAPI = RetrofitHelper.getInstance().create(WAPI::class.java)
 
-                // Create JSON using JSONObject
-                val jsonObject = JSONObject()
-                jsonObject.put("messaging_product", "whatsapp")
-                jsonObject.put("to", toPhoneNumber)
-                jsonObject.put("type", "template")
+                    // Create JSON using JSONObject
+                    val jsonObject = JSONObject()
+                    jsonObject.put("messaging_product", "whatsapp")
+                    jsonObject.put("to", toPhoneNumber)
+                    jsonObject.put("type", "template")
 
-                val jsonTemplateObject = JSONObject()
-                jsonTemplateObject.put("name", message)
-                val jsonLanguageObject = JSONObject()
-                jsonLanguageObject.put("code", languageCode)
-                jsonTemplateObject.put("language", jsonLanguageObject)
+                    val jsonTemplateObject = JSONObject()
+                    jsonTemplateObject.put("name", message)
+                    val jsonLanguageObject = JSONObject()
+                    jsonLanguageObject.put("code", languageCode)
+                    jsonTemplateObject.put("language", jsonLanguageObject)
 
-                jsonObject.put("template", jsonTemplateObject)
+                    jsonObject.put("template", jsonTemplateObject)
 
-                // Convert JSONObject to String
-                val jsonObjectString = jsonObject.toString()
-                val requestBody =
-                    jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
+                    // Convert JSONObject to String
+                    val jsonObjectString = jsonObject.toString()
+                    val requestBody =
+                        jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
 
-                GlobalScope.launch {
-                    val result = wPayAPI.sendMessage(
-                        "Bearer $bearerToken",
-                        version,
-                        phoneNumberID,
-                        requestBody
-                    )
-                    Log.d("WHATSAPP_SDK", "RESPONSE_CODE: ${result.code()}")
+                    GlobalScope.launch {
+                        val result = wPayAPI.sendMessage(
+                            "Bearer $bearerToken",
+                            version,
+                            phoneNumberID,
+                            requestBody
+                        )
+                        Log.d("WHATSAPP_SDK", "RESPONSE_CODE: ${result.code()}")
 
-                    val wResults = WResults()
-                    if (result.code() == 400) {
-                        val jsonObj = JSONObject(result.errorBody()!!.charStream().readText())
-                        Log.d("WHATSAPP_SDK", "ERROR_MESSAGE: $jsonObj")
-                        wResults.setMessage("MESSAGE SENT FAILED: CHECK THE LOGS")
-                    } else {
-                        Log.d("WHATSAPP_SDK", "MESSAGE_SENT")
-                        wResults.setMessage("MESSAGE SUCCESSFULLY SENT!")
+                        val wResults = WResults()
+                        if (result.code() == 400) {
+                            val jsonObj = JSONObject(result.errorBody()!!.charStream().readText())
+                            Log.d("WHATSAPP_SDK", "ERROR_MESSAGE: $jsonObj")
+                            wResults.setMessage("MESSAGE SENT FAILED: CHECK THE LOGS")
+                        } else {
+                            Log.d("WHATSAPP_SDK", "MESSAGE_SENT")
+                            wResults.setMessage("MESSAGE SUCCESSFULLY SENT!")
+                        }
+
+                        callback(wResults)
                     }
-
-                    callback(wResults)
                 }
             }
         }
