@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnSend.setOnClickListener {
 
             WhatsappBuilder.sendMessage(
+                this,
                 "Token", //token
                 "version", //v13.0
                 "Phone Number ID", //103075932423434
