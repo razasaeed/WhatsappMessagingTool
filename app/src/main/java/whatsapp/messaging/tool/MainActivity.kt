@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
                 this,
                 "Token", //token
                 "version", //v13.0
-                "Phone Number ID", //103075932423434
+                "Phone Number ID", //100000000000000
                 binding.etNumber.text.toString(),
                 binding.etMessage.text.toString(),
                 "en_US",
